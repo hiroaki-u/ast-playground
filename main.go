@@ -43,7 +43,7 @@ func createRepository(cCtx *cli.Context) {
 	}
 
 	// inputファイルを読み込み、interfaceとそのメソッドの情報を取得する
-	repo, err := parseRepositoryStructure(out)
+	repo, err := parseRepositoryStructure(in)
 	if err != nil {
 		log.Fatal(err)
 		return

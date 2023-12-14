@@ -36,8 +36,7 @@ func (rc *RepositoryContentBuilder) Execute(repo Repository, interfacePkg, pkgNa
 	return factory + strings.Join(methods, "\n"), nil
 }
 
-// repositoryのinterfaceを元に、repositoryの実装を作成する
-// interfaceのメソッドが複数ある場合もあるため、sliceで返す
+// メソッドの作成
 func (rc *RepositoryContentBuilder) createMethod(repo Repository, pkgName string) ([]string, error) {
 	res := []string{}
 

@@ -7,7 +7,6 @@ import (
 )
 
 // ファイルを走査し、ファイル内で見つかったrepositoryを返す
-// ファイル内にrepositoryInterfaceが複数ある場合があるため、sliceで返す
 func parseRepositoryStructure(file string) (Repository, error) {
 	// ファイルをパースして、astを取得する
 	repo := Repository{}
@@ -16,7 +15,7 @@ func parseRepositoryStructure(file string) (Repository, error) {
 		return repo, err
 	}
 
-	// astを走査する
+	// astを走査して、必要な情報を抽出
 	ast.Inspect(f, func(n ast.Node) bool {
 		methods := []*Method{}
 		switch x := n.(type) {
@@ -28,7 +27,7 @@ func parseRepositoryStructure(file string) (Repository, error) {
 			}
 			repo.Name = x.Name.Name
 
-			// 関数の生成
+			// 関数の情報を取得
 			for _, field := range it.Methods.List {
 				funcType, ok := field.Type.(*ast.FuncType)
 				if !ok {
@@ -56,7 +55,8 @@ func ExtractMethodValues(list []*ast.Field) []MethodValue {
 	for _, param := range list {
 		mv := MethodValue{}
 		mt := &MethodType{}
-		mv.Type = IdentifyNodeType(param.Type, mt)
+		IdentifyNodeType(param.Type, mt)
+		mv.Type = mt
 		if param.Names != nil {
 			for _, p := range param.Names {
 				mv.AppendValue(p.Name)
@@ -67,8 +67,8 @@ func ExtractMethodValues(list []*ast.Field) []MethodValue {
 	return mvs
 }
 
-// 形判定をして、該当する型を返す
-func IdentifyNodeType(t ast.Expr, mt *MethodType) *MethodType {
+// 各引数や返り値の型を特定して、MethodTypeに格納する
+func IdentifyNodeType(t ast.Expr, mt *MethodType) {
 	switch t.(type) {
 	// sliceの場合
 	case *ast.ArrayType:
@@ -109,8 +109,6 @@ func IdentifyNodeType(t ast.Expr, mt *MethodType) *MethodType {
 		mt.Value = "..." + se.(*ast.Ident).Name
 	default:
 	}
-
-	return mt
 }
 
 var primitiveTypes = map[string]struct{}{
