@@ -35,6 +35,7 @@ func createRepository(cCtx *cli.Context) {
 		log.Fatal("input_file is required")
 		return
 	}
+
 	// outputファイルを取得する
 	out := cCtx.String("output_file")
 	if out == "" {

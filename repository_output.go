@@ -173,5 +173,5 @@ var (
 	// 関数用テンプレート
 	methodTemplate = template.Must(template.ParseFS(templates, "templates/method.tpl"))
 	// New関数用テンプレート
-	newFuncTemplate = template.Must(template.ParseFS(templates, "templates/factory.tpl"))
+	newFuncTemplate = template.Must(template.ParseFS(templates, "templates/new_func.tpl"))
 )
