@@ -13,12 +13,12 @@ type userRepository struct {
 func NewUserRepository() domain.UserRepository {
 	return &userRepository{}
 }
-func (r *userRepository) FindById(ctx context.Context, id int) (*domain.User, error) {
+func (r *userRepository) FindById(ctx context.Context, id int) (domain.User, error) {
 	log.Default().Println("UserRepository.FindById")
-	return nil, nil
+	return domain.User{}, nil
 }
 
-func (r *userRepository) FindAll(ctx context.Context) ([]*domain.User, error) {
+func (r *userRepository) FindAll(ctx context.Context) ([]domain.User, error) {
 	log.Default().Println("UserRepository.FindAll")
 	return nil, nil
 }

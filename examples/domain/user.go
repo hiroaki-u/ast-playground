@@ -9,7 +9,7 @@ type User struct {
 }
 
 type UserRepository interface {
-	FindById(ctx context.Context, id int) (*User, error)
-	FindAll(ctx context.Context) ([]*User, error)
+	FindById(ctx context.Context, id int) (User, error)
+	FindAll(ctx context.Context) ([]User, error)
 	Store(ctx context.Context, user *User) error
 }
