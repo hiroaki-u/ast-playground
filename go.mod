@@ -1,6 +1,6 @@
-module github.com/hiroaki-u/ats-repository-creator
+module github.com/hiroaki-u/ast-playground
 
-go 1.21.0
+go 1.21
 
 require github.com/urfave/cli v1.22.14
 
