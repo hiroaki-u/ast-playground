@@ -79,10 +79,12 @@ func IdentifyNodeType(t ast.Expr, mt *MethodType) {
 	case *ast.StarExpr:
 		se, _ := t.(*ast.StarExpr).X.(*ast.Ident)
 		if se != nil {
-			if !isPrimitive(se) {
+			if !isPrimitive(se.Name) {
 				mt.isPointer = true
 				mt.requirePkgName = true
 				mt.Value = se.Name
+			} else {
+				mt.isPrimitive = true
 			}
 		} else {
 			se, _ := t.(*ast.StarExpr).X.(*ast.SelectorExpr)
@@ -95,8 +97,10 @@ func IdentifyNodeType(t ast.Expr, mt *MethodType) {
 	case *ast.Ident:
 		se := t.(*ast.Ident)
 		mt.Value = se.Name
-		if !isPrimitive(t.(*ast.Ident)) {
+		if !isPrimitive(t.(*ast.Ident).Name) {
 			mt.requirePkgName = true
+		} else {
+			mt.isPrimitive = true
 		}
 	// package + structの場合
 	case *ast.SelectorExpr:
@@ -111,32 +115,29 @@ func IdentifyNodeType(t ast.Expr, mt *MethodType) {
 	}
 }
 
-var primitiveTypes = map[string]struct{}{
-	"bool":       {},
-	"byte":       {},
-	"complex64":  {},
-	"complex128": {},
-	"error":      {},
-	"float32":    {},
-	"float64":    {},
-	"int":        {},
-	"int8":       {},
-	"int16":      {},
-	"int32":      {},
-	"int64":      {},
-	"rune":       {},
-	"string":     {},
-	"uint":       {},
-	"uint8":      {},
-	"uint16":     {},
-	"uint32":     {},
-	"uint64":     {},
-	"uintptr":    {},
+var typeZeroValueMap = map[string]string{
+	"bool":    "false",
+	"byte":    "0",
+	"error":   "nil",
+	"float32": "0.0",
+	"float64": "0.0",
+	"int":     "0",
+	"int8":    "0",
+	"int16":   "0",
+	"int32":   "0",
+	"int64":   "0",
+	"string":  "''",
+	"uint":    "0",
+	"uint8":   "0",
+	"uint16":  "0",
+	"uint32":  "0",
+	"uint64":  "0",
+	"uintptr": "0",
 }
 
 // astのIdentがプリミティブ型かどうかを判定する
-func isPrimitive(ident *ast.Ident) bool {
-	_, ok := primitiveTypes[ident.Name]
+func isPrimitive(typeName string) bool {
+	_, ok := typeZeroValueMap[typeName]
 	return ok
 }
 

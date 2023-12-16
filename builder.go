@@ -41,11 +41,11 @@ func (rc *RepositoryContentBuilder) createMethod(repo Repository, pkgName string
 	res := []string{}
 
 	for _, method := range repo.Methods {
-		nilList := []string{}
-		for i := 0; i < len(method.Returns); i++ {
-			nilList = append(nilList, "nil")
+		returnList := []string{}
+		for _, v := range method.Returns {
+			returnList = append(returnList, v.Type.getZeroValue(pkgName))
 		}
-		returnStr := "return " + strings.Join(nilList, ", ")
+		returnStr := "return " + strings.Join(returnList, ", ")
 		body := `log.Default().Println("` + repo.Name + "." + method.Name + `")
 		` + returnStr
 
@@ -130,8 +130,27 @@ type MethodType struct {
 	isSlice        bool   // slice
 	isPointer      bool   // ポインタ
 	isVariadic     bool   // 可変長引数
+	isPrimitive    bool   // 基本型
 	requirePkgName bool   // package名が必要な場合
 	Value          string // 型名
+}
+
+// その型のゼロ値を取得する
+// return時に必要になるため、可変の場合は無視する
+func (r *MethodType) getZeroValue(pkgName string) string {
+	if r.isSlice || r.isPointer {
+		return "nil"
+	}
+	if r.requirePkgName {
+		return pkgName + "." + r.Value + "{}"
+	}
+	if r.isPrimitive {
+		v, ok := typeZeroValueMap[r.Value]
+		if ok {
+			return v
+		}
+	}
+	return ""
 }
 
 func (r *MethodType) GetFormatValue(pkgName string) string {
