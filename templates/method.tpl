@@ -1,4 +1,6 @@
 
 func ({{ .ReceiverValue }} *{{ .ReceiverType }}) {{ .MethodName }}({{ .Args }}) ({{ .ReturnArgs }}) {
-  {{ .Body }}
+  {{ .Body.Log }}
+
+  {{ .Body.ReturnValue }}
 }

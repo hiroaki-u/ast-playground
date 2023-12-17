@@ -45,9 +45,9 @@ func (rc *RepositoryContentBuilder) createMethod(repo Repository, pkgName string
 		for _, v := range method.Returns {
 			returnList = append(returnList, v.Type.getZeroValue(pkgName))
 		}
-		returnStr := "return " + strings.Join(returnList, ", ")
-		body := `log.Default().Println("` + repo.Name + "." + method.Name + `")
-		` + returnStr
+		body := methodBodyParameter{}
+		body.ReturnValue = "return " + strings.Join(returnList, ", ")
+		body.Log = `log.Default().Println("` + repo.Name + "." + method.Name + `")`
 
 		content := &methodParameter{
 			ReceiverValue: "r",
@@ -72,7 +72,12 @@ type methodParameter struct {
 	MethodName    string
 	Args          string
 	ReturnArgs    string
-	Body          string
+	Body          methodBodyParameter
+}
+
+type methodBodyParameter struct {
+	Log         string
+	ReturnValue string
 }
 
 func (rc *RepositoryContentBuilder) createFactory(repo Repository, interfacePkg, pkgName string) (string, error) {
